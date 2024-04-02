@@ -1,8 +1,9 @@
 from flask import Flask,request,render_template
 import google.generativeai as palm
 import replicate
+import os
 
-palm.configure(api_key="AIzaSyCunpHive-JuvexhXZ7IsN6SvOU1t4mEIc")
+palm.configure(api_key="AIzaSyCCT1K99BJ1JbLwhCE7qOcQ5KOZcPJ9ZZ4")
 model = {
     "model": "models/chat-bison-001",
 }
@@ -52,14 +53,6 @@ def image_reply():
             "prompt": q,
         },
     )
-
-    
-    r = palm.chat(
-        **model,
-        messages=q
-    )
-
-    
     return(render_template("image_reply.html",r=r[0]))
 
 @app.route("/music_request",methods=["GET","POST"])
@@ -72,12 +65,11 @@ def music_reply():
     r = replicate.run(
         "meta/musicgen:7be0f12c54a8d033a0fbd14418c9af98962da9a86f5ff7811f9b3423a1f0b7d7",
         input={
-        "prompt": q,
-        "duration": 5,
-        },
-    )    
+            "prompt": q,
+            "duration:": 5
+        }
+    )
     return(render_template("music_reply.html",r=r))
-
 
 @app.route("/video_request",methods=["GET","POST"])
 def video_request():
@@ -89,12 +81,12 @@ def video_reply():
     r = replicate.run(
         "anotherjesse/zeroscope-v2-xl:9f747673945c62801b13b84701c783929c0ee784e4748ec062204894dda1a351",
         input={
-        "prompt": q,
-        "num_frames": 20,
-        },
+            "prompt": q,
+            "num_frames": 3
+        }
     )
-    
+    time.sleep(60)
     return(render_template("video_reply.html",r=r[0]))
-    
+
 if __name__ == "__main__":
     app.run()
